@@ -298,3 +298,15 @@ impl<D: CanBeAsyncDisplay + ?Sized> CanBeAsyncDisplay for SpecialEventDisplay<D>
         self.display.try_wait_for_reply_raw(seq, ctx)
     }
 }
+
+#[cfg(feature = "async")]
+impl<D: AsyncDisplay + ?Sized> AsyncDisplay for SpecialEventDisplay<D> {
+    fn poll_for_interest(
+        &mut self,
+        interest: breadx::display::Interest,
+        callback: &mut dyn FnMut(&mut dyn AsyncDisplay, &mut Context<'_>) -> Result<()>,
+        ctx: &mut Context<'_>,
+    ) -> core::task::Poll<Result<()>> {
+        self.display.poll_for_interest(interest, callback, ctx)
+    }
+}
