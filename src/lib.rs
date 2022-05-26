@@ -216,7 +216,7 @@ impl<D: DisplayBase + ?Sized> DisplayBase for SpecialEventDisplay<D> {
 }
 
 impl<D: Display + ?Sized> Display for SpecialEventDisplay<D> {
-    fn send_request_raw(&mut self, req: RawRequest) -> Result<u64> {
+    fn send_request_raw(&mut self, req: RawRequest<'_, '_>) -> Result<u64> {
         self.display.send_request_raw(req)
     }
 
@@ -249,7 +249,7 @@ impl<D: Display + ?Sized> Display for SpecialEventDisplay<D> {
 impl<D: CanBeAsyncDisplay + ?Sized> CanBeAsyncDisplay for SpecialEventDisplay<D> {
     fn format_request(
         &mut self,
-        req: &mut RawRequest,
+        req: &mut RawRequest<'_, '_>,
         ctx: &mut Context<'_>,
     ) -> Result<AsyncStatus<u64>> {
         self.display.format_request(req, ctx)
@@ -269,7 +269,7 @@ impl<D: CanBeAsyncDisplay + ?Sized> CanBeAsyncDisplay for SpecialEventDisplay<D>
 
     fn try_send_request_raw(
         &mut self,
-        req: &mut RawRequest,
+        req: &mut RawRequest<'_, '_>,
         ctx: &mut Context<'_>,
     ) -> Result<AsyncStatus<()>> {
         self.display.try_send_request_raw(req, ctx)
