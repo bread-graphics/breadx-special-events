@@ -137,6 +137,10 @@ impl<Dpy: DisplayBase + ?Sized> SpecialEventDisplay<Dpy> {
         mut until: impl FnMut(&mut Self) -> Option<Event>,
     ) -> Result<Option<Event>> {
         loop {
+            if let Some(event) = until(self) {
+                return Ok(Some(event));
+            }
+
             // poll for event from the inner display
             let event = match self.display.poll_for_event()? {
                 Some(event) => event,
@@ -144,10 +148,6 @@ impl<Dpy: DisplayBase + ?Sized> SpecialEventDisplay<Dpy> {
             };
 
             self.enqueue_event(event);
-
-            if let Some(event) = until(self) {
-                return Ok(Some(event));
-            }
         }
     }
 
@@ -164,14 +164,14 @@ impl<Dpy: Display + ?Sized> SpecialEventDisplay<Dpy> {
         mut until: impl FnMut(&mut Self) -> Option<Event>,
     ) -> Result<Event> {
         loop {
+            if let Some(event) = until(self) {
+                return Ok(event);
+            }
+
             // poll for event from the inner display
             let event = self.display.wait_for_event()?;
 
             self.enqueue_event(event);
-
-            if let Some(event) = until(self) {
-                return Ok(event);
-            }
         }
     }
 
@@ -186,13 +186,13 @@ impl<Dpy: AsyncDisplay + ?Sized> SpecialEventDisplay<Dpy> {
     /// Wait for a speical event from the given queue.
     pub async fn wait_for_special_event_async(&mut self, key: usize) -> Result<Event> {
         loop {
-            let event = self.display.wait_for_event().await?;
-
-            self.enqueue_event(event);
-
             if let Some(event) = self.special_event_queues[key].pop_front() {
                 return Ok(event);
             }
+
+            let event = self.display.wait_for_event().await?;
+
+            self.enqueue_event(event);
         }
     }
 }
