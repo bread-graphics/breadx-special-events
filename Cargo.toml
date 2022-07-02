@@ -15,7 +15,7 @@ homepage = "https://github.com/bread-graphics/breadx-special-events#readme"
 repository = "https://github.com/bread-graphics/breadx-special-events"
 
 [dependencies]
-breadx = { path = "../breadx/breadx", default-features = false }
+breadx = { version = "3", default-features = false }
 slab = { version = "0.4.6", default-features = false }
 
 [features]
