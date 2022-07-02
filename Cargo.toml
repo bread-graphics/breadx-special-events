@@ -1,13 +1,26 @@
+#               Copyright John Nunley, 2022.
+# Distributed under the Boost Software License, Version 1.0.
+#       (See accompanying file LICENSE or copy at
+#         https://www.boost.org/LICENSE_1_0.txt)
+
+
 [package]
 name = "breadx-special-events"
 version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2018"
+authors = ["notgull <jtnunley01@gmail.com>"]
+description = "Implementation of special events for Breadx"
+license = "BSL-1.0"
+homepage = "https://github.com/bread-graphics/breadx-special-events#readme"
+repository = "https://github.com/bread-graphics/breadx-special-events"
 
 [dependencies]
 breadx = { path = "../breadx/breadx", default-features = false }
 slab = { version = "0.4.6", default-features = false }
 
 [features]
+default = []
 async = ["breadx/async"]
+
+[package.metadata.docs.rs]
+all-features = true

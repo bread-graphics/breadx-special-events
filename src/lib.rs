@@ -1,4 +1,8 @@
-// MIT/Apache2 License
+//               Copyright John Nunley, 2022.
+// Distributed under the Boost Software License, Version 1.0.
+//       (See accompanying file LICENSE or copy at
+//         https://www.boost.org/LICENSE_1_0.txt)
+
 
 //! Implements the "special events" pattern for [`breadx`].
 //!
@@ -19,7 +23,7 @@
 
 extern crate alloc;
 
-use alloc::{boxed::Box, collections::VecDeque, vec::Vec};
+use alloc::{boxed::Box, collections::VecDeque, sync::Arc, vec::Vec};
 use breadx::{
     display::{Display, DisplayBase, RawReply, RawRequest},
     protocol::Event,
@@ -198,7 +202,7 @@ impl<Dpy: AsyncDisplay + ?Sized> SpecialEventDisplay<Dpy> {
 }
 
 impl<D: DisplayBase + ?Sized> DisplayBase for SpecialEventDisplay<D> {
-    fn setup(&self) -> &breadx::protocol::xproto::Setup {
+    fn setup(&self) -> &Arc<breadx::protocol::xproto::Setup> {
         self.display.setup()
     }
 
@@ -242,6 +246,10 @@ impl<D: Display + ?Sized> Display for SpecialEventDisplay<D> {
 
     fn wait_for_event(&mut self) -> Result<Event> {
         self.wait_for_some_event(|this| this.event_queue.pop_front())
+    }
+
+    fn check_for_error(&mut self, seq: u64) -> Result<()> {
+        self.display.check_for_error(seq)
     }
 }
 
@@ -296,6 +304,10 @@ impl<D: CanBeAsyncDisplay + ?Sized> CanBeAsyncDisplay for SpecialEventDisplay<D>
         ctx: &mut Context<'_>,
     ) -> Result<AsyncStatus<RawReply>> {
         self.display.try_wait_for_reply_raw(seq, ctx)
+    }
+
+    fn try_check_for_error(&mut self,seq:u64,ctx: &mut Context< '_>) -> Result<AsyncStatus<()>> {
+        self.display.try_check_for_error(seq,ctx)
     }
 }
 
